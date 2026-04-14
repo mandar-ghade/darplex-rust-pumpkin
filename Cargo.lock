@@ -48,6 +48,7 @@ checksum = "790eea4361631c5e7d22598ecd5723ff611904e3344ce8720784c93e3d83d40b"
 name = "darplex-plugin"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "pumpkin-plugin-api",
  "tracing",
 ]
@@ -143,6 +144,12 @@ name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+
+[[package]]
+name = "lazy_static"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "leb128fmt"
@@ -250,7 +257,7 @@ dependencies = [
 [[package]]
 name = "pumpkin-plugin-api"
 version = "0.1.0"
-source = "git+https://github.com/Pumpkin-MC/Pumpkin#988ef8764f0dadd094313122e8f57f57ce97f468"
+source = "git+https://github.com/Pumpkin-MC/Pumpkin#1a8e2649e3ad4c8b6554d0a29e8b71f588966dba"
 dependencies = [
  "postcard",
  "tracing",

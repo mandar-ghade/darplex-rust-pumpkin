@@ -1,14 +1,13 @@
 use pumpkin_plugin_api::{
     Context, Plugin, PluginMetadata,
-    command::Command,
-    events::{EventHandler, PlayerCommandSendEvent},
     permission::{Permission, PermissionDefault, PermissionLevel},
 };
 use tracing::info;
 
-use crate::commands::get_set_rank_cmd;
+use crate::{commands::get_set_rank_cmd, events::chat_event::MessageHandler};
 
 mod commands;
+mod events;
 mod groups;
 
 struct DarplexPlugin;
@@ -29,14 +28,21 @@ impl Plugin for DarplexPlugin {
 
     fn on_load(&mut self, context: Context) -> pumpkin_plugin_api::Result<()> {
         info!("Darplex plugin has loaded!");
+
+        const SET_RANK_PERM: &str = "darplex-network::set-rank";
         context.register_permission(&Permission {
-            node: "darplex-network::set-rank".into(),
+            node: SET_RANK_PERM.into(),
             description: "Set rank".into(),
             default: PermissionDefault::Op(PermissionLevel::Three),
             children: Vec::new(),
         })?;
-
-        context.register_command(get_set_rank_cmd(), "darplex-network::set-rank");
+        context.register_command(get_set_rank_cmd(), SET_RANK_PERM);
+        info!("Darplex EventHandler is registering!");
+        context.register_event_handler(
+            MessageHandler,
+            pumpkin_plugin_api::events::EventPriority::Highest,
+            true,
+        )?;
         Ok(())
     }
 
