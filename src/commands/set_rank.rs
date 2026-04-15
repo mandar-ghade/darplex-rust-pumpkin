@@ -1,13 +1,11 @@
 use pumpkin_plugin_api::{
-    command::{CommandError, CommandSender},
+    command::CommandError,
     command_wit::Arg,
     commands::CommandHandler,
-    gui::Gui,
     text::{NamedColor, TextComponent},
 };
-use tracing::info;
 
-use crate::groups::PermissionGroup;
+use crate::{cmd_wrap::Wrappable, groups::PermissionGroup};
 
 pub struct SetRankCommandExecutor(pub PermissionGroup);
 
@@ -21,7 +19,7 @@ impl CommandHandler for SetRankCommandExecutor {
     fn handle(
         &self,
         sender: pumpkin_plugin_api::command::CommandSender,
-        server: pumpkin_plugin_api::Server,
+        _server: pumpkin_plugin_api::Server,
         args: pumpkin_plugin_api::command::ConsumedArgs,
     ) -> pumpkin_plugin_api::Result<i32, CommandError> {
         let rank = &self.0;
@@ -51,29 +49,32 @@ impl CommandHandler for SetRankCommandExecutor {
             )));
         }
         target.set_permission_level(rank.get_permission_lvl());
-        sender.send_message({
-            let name = TextComponent::text(target.get_name().as_str());
-            let rank_text = TextComponent::text(rank.as_str());
-            name.color_named(NamedColor::Gray);
-            rank_text.color_named(rank.get_color());
-            let body = TextComponent::text("'s rank has been set to: ");
-            name.add_child({
-                body.add_child(rank_text);
-                body
-            });
-            name
-        });
+
+        sender.send_message(
+            TextComponent::text(target.get_name().as_str())
+                .wrap()
+                .color_named(NamedColor::Gray)
+                .add_child(
+                    TextComponent::text("'s rank has been set to: ")
+                        .wrap()
+                        .add_child(
+                            TextComponent::text(rank.as_str())
+                                .wrap()
+                                .color_named(rank.get_color()),
+                        ),
+                )
+                .build(),
+        );
         target.send_system_message(
-            {
-                let text = TextComponent::text("Your rank has been set to: ");
-                let rank_text = TextComponent::text(rank.as_str());
-                rank_text.color_named(rank.get_color());
-                text.add_child({
-                    rank_text.add_child(TextComponent::text("!"));
-                    rank_text
-                });
-                text
-            },
+            TextComponent::text("Your rank has been set to: ")
+                .wrap()
+                .add_child(
+                    TextComponent::text(rank.as_str())
+                        .wrap()
+                        .color_named(rank.get_color())
+                        .add_child(TextComponent::text("!").into()),
+                )
+                .build(),
             false,
         );
         Ok(1)

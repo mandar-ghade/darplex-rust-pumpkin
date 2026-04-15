@@ -1,39 +1,36 @@
+use crate::{cmd_wrap::Wrappable, groups::PermissionGroup};
 use pumpkin_plugin_api::{
     events::{EventData, EventHandler, PlayerChatEvent},
     text::{NamedColor, TextComponent},
 };
-use tracing::info;
-
-use crate::groups::PermissionGroup;
 
 pub struct MessageHandler;
 
 fn get_text(rank: &PermissionGroup, name_str: &str, message: &str) -> TextComponent {
-    // "RANK "
-    let mut rank_str = String::from(rank.as_str()) + " ";
+    // Unranked players got no tag
+    let mut rank_str = String::new();
 
-    // Players got no tag
-    if *rank == PermissionGroup::Player {
-        rank_str = String::new();
+    if *rank != PermissionGroup::Player {
+        rank_str = String::from(rank.as_str()) + " ";
     }
 
-    let rank_text = TextComponent::text(rank_str.as_str());
-    rank_text.color_named(rank.get_color());
-    rank_text.bold(true);
-    let name = TextComponent::text(name_str);
-    name.color_named(NamedColor::Yellow);
-    name.bold(false);
-
-    let body = TextComponent::text(message);
-    body.color_named(NamedColor::Gray);
-    name.bold(false);
-
-    rank_text.add_child({
-        name.add_child(body);
-        name
-    });
-
-    rank_text
+    TextComponent::text(&rank_str)
+        .wrap()
+        .color_named(rank.get_color())
+        .bold(true)
+        .add_child(
+            TextComponent::text(name_str)
+                .wrap()
+                .color_named(NamedColor::Yellow)
+                .bold(false)
+                .add_child(
+                    TextComponent::text(message)
+                        .wrap()
+                        .color_named(NamedColor::Gray)
+                        .bold(false),
+                ),
+        )
+        .build()
 }
 
 impl EventHandler<PlayerChatEvent> for MessageHandler {

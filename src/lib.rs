@@ -14,6 +14,7 @@ mod cmd_wrap;
 mod commands;
 mod events;
 mod groups;
+mod text_wrap;
 
 struct DarplexPlugin;
 

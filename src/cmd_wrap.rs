@@ -20,17 +20,17 @@ impl From<CommandNode> for CmdWrap {
     }
 }
 
-pub trait Wrappable {
-    fn wrap(self) -> CmdWrap;
+pub trait Wrappable<T> {
+    fn wrap(self) -> T;
 }
 
-impl Wrappable for Command {
+impl Wrappable<CmdWrap> for Command {
     fn wrap(self) -> CmdWrap {
         CmdWrap::Command(self)
     }
 }
 
-impl Wrappable for CommandNode {
+impl Wrappable<CmdWrap> for CommandNode {
     fn wrap(self) -> CmdWrap {
         CmdWrap::CommandNode(self)
     }
