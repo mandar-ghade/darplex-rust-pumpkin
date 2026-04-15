@@ -4,54 +4,65 @@ use crate::groups::PermissionGroup;
 use lazy_static::lazy_static;
 
 lazy_static! {
-    pub static ref Permissions: HashMap<PermissionGroup, HashSet<Perm>> = {
+    pub static ref UniquePermissionsToGroup: HashMap<PermissionGroup, HashSet<Perm>> = {
+        // Basically just each permission unique to each group (higher level permission level inhertits)
         let mut m = HashMap::new();
-        m.insert(
-            PermissionGroup::Owner,
-            HashSet::from([
-                Perm::BanAdmin,
-                Perm::All,
-                Perm::Op,
-                Perm::BanMod,
-                Perm::Give,
-                Perm::Tp,
-                Perm::BanPlayer,
-                Perm::Help,
-            ]),
-        );
-        m.insert(
-            PermissionGroup::Admin,
-            HashSet::from([
-                Perm::All,
-                Perm::Op,
-                Perm::BanMod,
-                Perm::Give,
-                Perm::Tp,
-                Perm::BanPlayer,
-                Perm::Help,
-            ]),
-        );
-        m.insert(
-            PermissionGroup::Mod,
-            HashSet::from([Perm::Tp, Perm::BanPlayer, Perm::Help]),
-        );
-        m.insert(PermissionGroup::Player, HashSet::from([Perm::Help]));
+        m.insert(PermissionGroup::Owner, HashSet::from(
+            [Perm::BanAdmin]));
+        m.insert(PermissionGroup::Admin, HashSet::from(
+            [Perm::Op, Perm::BanMod, Perm::Give, Perm::SetRank]
+        ));
+        m.insert(PermissionGroup::Mod, HashSet::from(
+            [Perm::BanPlayer, Perm::Tp]
+        ));
+        m.insert(PermissionGroup::Player, HashSet::from(
+            [Perm::Help]
+        ));
         m
     };
 }
 
 #[derive(PartialEq, Eq, Hash)]
+/// Not to be confused with Pumpkin's `Permission`
 pub enum Perm {
     /// Owner
     BanAdmin,
     /// Admin
-    All, //// Maybe get rid of this
     Op,
     BanMod,
     Give,
+    SetRank,
     // Moderator
     Tp,
     BanPlayer,
     /// Player
     Help,
+}
+
+impl Perm {
+    pub fn as_full_str(&self) -> &'static str {
+        match self {
+            Self::BanAdmin => "darplex-network:ban-admin",
+            Self::Op => "darplex-network:op",
+            Self::BanMod => "darplex-network:ban-mod",
+            Self::Give => "darplex-network:give",
+            Self::SetRank => "darplex-network:set-rank",
+            Self::Tp => "darplex-network:tp",
+            Self::BanPlayer => "darplex-network:ban-player",
+            Self::Help => "darplex-network:help",
+        }
+    }
+
+    pub fn get_description(&self) -> &'static str {
+        match self {
+            Self::BanAdmin => "Permission to ban admins",
+            Self::Op => "Permission to OP players",
+            Self::BanMod => "Permission to ban moderators",
+            Self::Give => "Permission to give items",
+            Self::SetRank => "Permission to use setrank command",
+            Self::Tp => "Permission to teleport players",
+            Self::BanPlayer => "Permission to ban players",
+            Self::Help => "Permission to use help command",
+        }
+    }
 }

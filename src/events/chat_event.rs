@@ -9,13 +9,12 @@ use crate::groups::PermissionGroup;
 pub struct MessageHandler;
 
 fn get_text(rank: &PermissionGroup, name_str: &str, message: &str) -> TextComponent {
-    let mut rank_str = String::from(rank.as_str());
+    // "RANK "
+    let mut rank_str = String::from(rank.as_str()) + " ";
 
     // Players got no tag
     if *rank == PermissionGroup::Player {
         rank_str = String::new();
-    } else {
-        rank_str += " "; // adds space rank after rank
     }
 
     let rank_text = TextComponent::text(rank_str.as_str());
@@ -43,7 +42,6 @@ impl EventHandler<PlayerChatEvent> for MessageHandler {
         _server: pumpkin_plugin_api::Server,
         mut event: EventData<PlayerChatEvent>,
     ) -> EventData<PlayerChatEvent> {
-        // event.cancelled = true;
         event.cancelled = true;
 
         let rank = PermissionGroup::from_permission_lvl(&event.player.get_permission_level());

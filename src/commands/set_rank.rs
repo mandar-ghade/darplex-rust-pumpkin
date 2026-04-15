@@ -2,6 +2,7 @@ use pumpkin_plugin_api::{
     command::{CommandError, CommandSender},
     command_wit::Arg,
     commands::CommandHandler,
+    gui::Gui,
     text::{NamedColor, TextComponent},
 };
 use tracing::info;
@@ -10,6 +11,12 @@ use crate::groups::PermissionGroup;
 
 pub struct SetRankCommandExecutor(pub PermissionGroup);
 
+/// Sets a `target`'s in-game rank.
+///
+/// `target`: online user
+///
+/// Restriction: the command sender must have a higher rank
+/// than the one its trying to assign.
 impl CommandHandler for SetRankCommandExecutor {
     fn handle(
         &self,
@@ -18,22 +25,31 @@ impl CommandHandler for SetRankCommandExecutor {
         args: pumpkin_plugin_api::command::ConsumedArgs,
     ) -> pumpkin_plugin_api::Result<i32, CommandError> {
         let rank = &self.0;
-        // if !sender.is_player() {
-        //     return Err(CommandError::CommandFailed(TextComponent::text(
-        //         "Sender must be player.",
-        //     )));
-        // }
-        let Arg::Simple(target) = args.get_value("target") else {
+        let Arg::Players(targets) = args.get_value("target") else {
             return Err(CommandError::CommandFailed(TextComponent::text(
-                "Target not specified.",
+                "Target was not found.",
             )));
         };
-        let Some(target) = server.get_player_by_name(target.as_str()) else {
-            // TODO: Offline handling
+        if targets.len() == 0 {
             return Err(CommandError::CommandFailed(TextComponent::text(
-                "Target was not online.",
+                "No target found!",
             )));
-        };
+        } else if targets.len() > 1 {
+            return Err(CommandError::CommandFailed(TextComponent::text(
+                "Too many targets!",
+            )));
+        }
+
+        let target = targets.first().expect("Target expected!");
+
+        // Cannot assign rank higher than sender's own (Unless it is console)
+        if let Some(player_sender) = sender.as_player()
+            && player_sender.get_permission_level() < rank.get_permission_lvl()
+        {
+            return Err(CommandError::CommandFailed(TextComponent::text(
+                "Cannot assign higher rank than YOUR current rank",
+            )));
+        }
         target.set_permission_level(rank.get_permission_lvl());
         sender.send_message({
             let name = TextComponent::text(target.get_name().as_str());

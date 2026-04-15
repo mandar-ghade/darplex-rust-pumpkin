@@ -9,6 +9,8 @@ crate-type = ["cdylib"]
 [dependencies]
 lazy_static = "1.5.0"
 pumpkin-plugin-api = { version = "0.1.0", git = "https://github.com/Pumpkin-MC/Pumpkin", package = "pumpkin-plugin-api" }
+strum = "0.28.0"
+strum_macros = "0.28.0"
 tracing = "0.1"
 
 [profile.release] 
