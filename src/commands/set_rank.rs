@@ -28,7 +28,7 @@ impl CommandHandler for SetRankCommandExecutor {
                 "Target was not found.",
             )));
         };
-        if targets.len() == 0 {
+        if targets.is_empty() {
             return Err(CommandError::CommandFailed(TextComponent::text(
                 "No target found!",
             )));

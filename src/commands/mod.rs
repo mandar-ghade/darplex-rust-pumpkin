@@ -4,10 +4,14 @@ use pumpkin_plugin_api::{
 };
 
 use crate::{
-    cmd_wrap::Wrappable, commands::set_rank::SetRankCommandExecutor, groups::PermissionGroup,
+    cmd_wrap::Wrappable,
+    commands::{set_rank::SetRankCommandExecutor, tp::TpDirect},
+    groups::{PermissionGroup, perms::Perm},
 };
 
+pub mod cmd_check;
 pub mod set_rank;
+pub mod tp;
 
 pub fn get_set_rank_cmd() -> Command {
     let set_rank_cmd_names = ["setrank".to_string(), "giverank".to_string()];
@@ -26,4 +30,19 @@ pub fn get_set_rank_cmd() -> Command {
             .then(player.execute(SetRankCommandExecutor(PermissionGroup::Player))),
     )
     .build()
+}
+
+pub fn get_tp_cmd() -> Command {
+    let tp_cmd_names = ["tp".to_string(), "teleport".to_string(), "tpa".to_string()];
+    let description = "Teleport player";
+    Command::new(&tp_cmd_names, description)
+        .wrap()
+        .then(
+            // TP Direct
+            CommandNode::argument("target", &ArgumentType::Players)
+                .wrap()
+                .require(Perm::TpDirect)
+                .execute(TpDirect()),
+        )
+        .build()
 }

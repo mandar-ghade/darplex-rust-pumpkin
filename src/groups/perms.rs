@@ -10,7 +10,7 @@ lazy_static! {
         m.insert(PermissionGroup::Owner, HashSet::from(
             [Perm::BanAdmin]));
         m.insert(PermissionGroup::Admin, HashSet::from(
-            [Perm::Op, Perm::BanMod, Perm::Give, Perm::SetRank]
+            [Perm::Op, Perm::BanMod, Perm::Give, Perm::SetRank, Perm::TpDirect] // TpDirect is test
         ));
         m.insert(PermissionGroup::Mod, HashSet::from(
             [Perm::BanPlayer, Perm::Tp]
@@ -32,6 +32,7 @@ pub enum Perm {
     BanMod,
     Give,
     SetRank,
+    TpDirect, // Test
     // Moderator
     Tp,
     BanPlayer,
@@ -40,6 +41,20 @@ pub enum Perm {
 }
 
 impl Perm {
+    pub fn as_short_str(&self) -> &'static str {
+        match self {
+            Self::BanAdmin => "BanAdmin",
+            Self::Op => "Op",
+            Self::BanMod => "BanMod",
+            Self::Give => "Give",
+            Self::SetRank => "SetRank",
+            Self::TpDirect => "TpDirect",
+            Self::Tp => "Tp",
+            Self::BanPlayer => "BanPlayer",
+            Self::Help => "Help",
+        }
+    }
+
     pub fn as_full_str(&self) -> &'static str {
         match self {
             Self::BanAdmin => "darplex-network:ban-admin",
@@ -47,6 +62,7 @@ impl Perm {
             Self::BanMod => "darplex-network:ban-mod",
             Self::Give => "darplex-network:give",
             Self::SetRank => "darplex-network:set-rank",
+            Self::TpDirect => "darplex-network:tp-direct",
             Self::Tp => "darplex-network:tp",
             Self::BanPlayer => "darplex-network:ban-player",
             Self::Help => "darplex-network:help",
@@ -60,6 +76,7 @@ impl Perm {
             Self::BanMod => "Permission to ban moderators",
             Self::Give => "Permission to give items",
             Self::SetRank => "Permission to use setrank command",
+            Self::TpDirect => "Permission to teleport directly to other players",
             Self::Tp => "Permission to teleport players",
             Self::BanPlayer => "Permission to ban players",
             Self::Help => "Permission to use help command",

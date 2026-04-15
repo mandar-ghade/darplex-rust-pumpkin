@@ -5,7 +5,7 @@ use pumpkin_plugin_api::{
 use tracing::info;
 
 use crate::{
-    commands::get_set_rank_cmd,
+    commands::{get_set_rank_cmd, get_tp_cmd},
     events::chat_event::MessageHandler,
     groups::{perms::Perm, register_perms},
 };
@@ -29,6 +29,7 @@ impl Plugin for DarplexPlugin {
             version: env!("CARGO_PKG_VERSION").into(),
             authors: vec!["Puckdar".into()],
             description: "Darplex network plugin".into(),
+            dependencies: Vec::new(),
         }
     }
 
@@ -37,6 +38,7 @@ impl Plugin for DarplexPlugin {
 
         register_perms(&mut context)?;
         context.register_command(get_set_rank_cmd(), Perm::SetRank.as_full_str());
+        context.register_command(get_tp_cmd(), Perm::Tp.as_full_str());
         info!("Darplex EventHandler is registering!");
         context.register_event_handler(
             MessageHandler,
